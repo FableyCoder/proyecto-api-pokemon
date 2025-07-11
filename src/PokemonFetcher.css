@@ -65,3 +65,21 @@
     padding: 15px;
     border-radius: 8px;
   }
+
+  input{
+    border-color: rgb(107, 107, 107);
+  }
+
+  button{
+    background-color: yellow;
+    border-color: purple;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+  }
+
+  .pokemon-list p{
+    border: double;
+    background-color: #51a0f3;
+  }
+
+  

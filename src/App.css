@@ -40,3 +40,8 @@
 .read-the-docs {
   color: #888;
 }
+
+body{
+  background-image: url('./HD-wallpaper-pokemon-pokemon-black-and-white.jpg');
+  background-size: cover;
+}

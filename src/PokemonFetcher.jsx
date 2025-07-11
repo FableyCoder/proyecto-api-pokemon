@@ -5,6 +5,9 @@ const PokemonFetcher = () => {
   const [pokemones, setPokemones] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
+  const [tipo, setTipo] = useState('');
+  const [titulo, setTitulo] = useState(false)
+
 useEffect(() => {
     const fetchPokemones = async () => {
       try {
@@ -46,6 +49,38 @@ useEffect(() => {
     fetchPokemones();
   }, []); // El array vacío asegura que se ejecute solo una vez al montar el componente
 
+  const typePokemones = async () => {
+    if (!tipo) return;
+    try {
+      setCargando(true)
+      setError(null)
+      const tiposEncontrados = [];
+      
+      const respuesta = await fetch(`https://pokeapi.co/api/v2/type/${tipo.toLowerCase()}/`)
+      if (!respuesta.ok){
+        throw new error ('Tipo no encontrado, asegurese de anotarlo bien')
+      }
+      const data = await respuesta.json();
+      const PokemonPorTipo = data.pokemon.slice(0)
+      for (const entry of PokemonPorTipo){
+        const pokeResp = await fetch(entry.pokemon.url);
+        const pokeData = await pokeResp.json();
+        tiposEncontrados.push({
+          id: pokeData.id,
+          nombre: pokeData.name,
+          imagen: pokeData.sprites.front_default,
+          tipos: pokeData.types.map(typeInfo => typeInfo.type.name),
+        });
+      }
+      setPokemones(tiposEncontrados);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setCargando(false);
+      setTitulo(true)
+    }
+  };
+
   if (cargando) {
     return <div className="pokemon-container">Cargando Pokémon...</div>;
   }
@@ -56,7 +91,12 @@ useEffect(() => {
 
   return (
     <div className='pokemon-container'>
-      <h2>Tus 4 Pokémon Aleatorios</h2>
+      <div>
+        <h3>Buscador Por Tipo</h3>
+        <input type="text" value={tipo} onChange={e => setTipo(e.target.value)} placeholder="Ejemplo: fire, dark, steel"/>
+        <button onClick={typePokemones} disabled={cargando || !tipo}>{cargando ? "Buscando..." : "Buscar"}</button>
+      </div>
+      <h2>{titulo ? "Pokemon de tipo : "+tipo.charAt(0).toUpperCase()+tipo.slice(1) : "Tus 4 Pokémon Aleatorios"}</h2>
       <div className="pokemon-list"> 
         {pokemones.map(pokemon => (
           <div key={pokemon.id} className="pokemon-card">
